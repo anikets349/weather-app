@@ -52,6 +52,13 @@ const loadFeelsLike = function ({ main: { feels_like } }) {
     container.querySelector('.temp').innerHTML = formatTemperature(feels_like);
 };
 
+const loadHumidity = function ({ main: { humidity } }) {
+    const container = document.getElementById('humidity');
+    container.querySelector('.humidity-value').innerHTML = `
+        <span>${humidity}gm<sup>-3</sup></span>
+    `;
+};
+
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         const currentWeather = await getCurrentWeatherData();
@@ -60,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const hourlyForecast = await getHourlyForecast(currentWeather);
         loadHourlyForecast(hourlyForecast);
         loadFeelsLike(currentWeather);
+        loadHumidity(currentWeather);
     } catch (err) {
         console.log('Error: ' + err.message);
     }
