@@ -68,6 +68,28 @@ article > p {
 
 #hourly-forecast {
   grid-area: hourly;
+  text-align: center;
+}
+
+#hourly-forecast #hourly-container {
+  display: grid;
+  grid-template-columns: repeat(auto, minmax(100px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(100px, 1fr);
+  overflow-x: auto;
+  gap: var(--spacing-medium);
+}
+
+#hourly-forecast #hourly-container .time,
+#hourly-forecast #hourly-container .temp {
+  font-size: var(--font-regular);
+  font-weight: var(--font-semibold);
+}
+
+#hourly-forecast #hourly-container .icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
 }
 
 #five-day-forecast {
