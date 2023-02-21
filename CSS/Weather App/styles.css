@@ -1,0 +1,79 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --spacing-medium: 8px;
+  --spacing-regular: 16px;
+  --font-small: 0.5rem;
+  --font-regular: 1rem;
+  --font-large: 2rem;
+  --font-xlarge: 3.5rem;
+  --font-semibold: 600;
+}
+
+body {
+  padding-block: var(--spacing-regular);
+  font-family: Arial, Helvetica, sans-serif;
+  width: 400px;
+  margin: auto;
+}
+
+article > h1,
+article > h2,
+article > p {
+  margin-block: var(--spacing-regular);
+}
+
+.container,
+.container > article {
+  border: 1px solid black;
+  border-radius: var(--spacing-regular);
+  padding: var(--spacing-regular);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:
+    "current current"
+    "hourly hourly"
+    "fiveday fiveday"
+    "feelslike humidity";
+  gap: var(--spacing-regular);
+}
+
+#current-forecast {
+  grid-area: current;
+  text-align: center;
+}
+
+#current-forecast .temp {
+  font-size: var(--font-xlarge);
+}
+
+#current-forecast .desc,
+#current-forecast .min-max-temp {
+  font-size: var(--font-regular);
+  font-weight: var(--font-semibold);
+}
+
+#hourly-forecast {
+  grid-area: hourly;
+}
+
+#five-day-forecast {
+  grid-area: fiveday;
+}
+
+#feels-like {
+  grid-area: feelslike;
+}
+
+#humidity {
+  grid-area: humidity;
+}
