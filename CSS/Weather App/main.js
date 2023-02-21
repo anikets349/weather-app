@@ -2,7 +2,7 @@ const API_KEY = 'e6a7b9d25322776f6cef20e87dfcba86';
 
 const getCurrentWeatherData = async function () {
     const city = 'belagavi';
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+    const response = await fetch(`https://apii.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
     return response.json();
 };
 
@@ -20,7 +20,11 @@ const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_mi
 };
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const currentWeather = await getCurrentWeatherData();
-    console.dir(currentWeather);
-    loadCurrentWeatherInfo(currentWeather);
+    try {
+        const currentWeather = await getCurrentWeatherData();
+        console.dir(currentWeather);
+        loadCurrentWeatherInfo(currentWeather);
+    } catch (err) {
+        console.log('Error: ' + err.message);
+    }
 });

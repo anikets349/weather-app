@@ -56,6 +56,10 @@ article > p {
   font-size: var(--font-xlarge);
 }
 
+#current-forecast .desc {
+  text-transform: capitalize;
+}
+
 #current-forecast .desc,
 #current-forecast .min-max-temp {
   font-size: var(--font-regular);
