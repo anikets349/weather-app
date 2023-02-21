@@ -6,13 +6,17 @@ const getCurrentWeatherData = async function () {
     return response.json();
 };
 
+const formatTemperature = function (temp) {
+    return `<span>${temp.toFixed(1)}&deg;C</span>`;
+};
+
 const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_min }, weather: [{ description }] }) {
     const currentForecastElement = document.getElementById('current-forecast');
     console.log(currentForecastElement);
     currentForecastElement.querySelector('.city').textContent = name;
-    currentForecastElement.querySelector('.temp').textContent = temp;
+    currentForecastElement.querySelector('.temp').innerHTML = formatTemperature(temp);
     currentForecastElement.querySelector('.desc').textContent = description;
-    currentForecastElement.querySelector('.min-max-temp').textContent = `${temp_max} / ${temp_min}`;
+    currentForecastElement.querySelector('.min-max-temp').innerHTML = `High: ${formatTemperature(temp_max)}, Low: ${formatTemperature(temp_min)}`;
 };
 
 document.addEventListener('DOMContentLoaded', async function () {
