@@ -33,7 +33,6 @@ const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_mi
 
 const loadHourlyForecast = function (hourlyForecast) {
     let hourlyData = hourlyForecast.slice(0, 13);
-    console.log(hourlyData);
     const hourlyContainer = document.getElementById('hourly-container');
     let data = ``;
     for (let { dt_txt: time, icon, temp } of hourlyData) {
@@ -48,12 +47,19 @@ const loadHourlyForecast = function (hourlyForecast) {
     }
 };
 
+const loadFeelsLike = function ({ main: { feels_like } }) {
+    const container = document.getElementById('feels-like');
+    container.querySelector('.temp').innerHTML = formatTemperature(feels_like);
+};
+
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         const currentWeather = await getCurrentWeatherData();
+        console.dir(currentWeather);
         loadCurrentWeatherInfo(currentWeather);
         const hourlyForecast = await getHourlyForecast(currentWeather);
         loadHourlyForecast(hourlyForecast);
+        loadFeelsLike(currentWeather);
     } catch (err) {
         console.log('Error: ' + err.message);
     }

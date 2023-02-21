@@ -47,9 +47,15 @@ article > p {
   gap: var(--spacing-regular);
 }
 
+#current-forecast,
+#hourly-forecast,
+#feels-like,
+#humidity {
+  text-align: center;
+}
+
 #current-forecast {
   grid-area: current;
-  text-align: center;
 }
 
 #current-forecast .temp {
@@ -68,7 +74,6 @@ article > p {
 
 #hourly-forecast {
   grid-area: hourly;
-  text-align: center;
 }
 
 #hourly-forecast #hourly-container {
