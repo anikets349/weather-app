@@ -1,4 +1,5 @@
 const API_KEY = 'e6a7b9d25322776f6cef20e87dfcba86';
+const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 const getCurrentWeatherData = async function () {
     const city = 'belagavi';
@@ -22,6 +23,29 @@ const formatTemperature = function (temp) {
 const createImgUrl = function (icon) {
     return `http://openweathermap.org/img/wn/${icon}@2x.png`;
 }
+
+const computeDayWiseForecast = function (hourlyForecast) {
+    let dayWiseForecast = new Map();
+    for (let forecast of hourlyForecast) {
+        const [date] = forecast.dt_txt.split(' ');
+        const dayOfTheWeek = DAYS_OF_THE_WEEK[new Date(date).getDay()];
+        console.log(dayOfTheWeek);
+        if (dayWiseForecast.has(dayOfTheWeek)) {
+            let forecastForTheDay = dayWiseForecast.get(dayOfTheWeek);
+            forecastForTheDay.push(forecast);
+            dayWiseForecast.set(dayOfTheWeek, forecastForTheDay);
+        } else {
+            dayWiseForecast.set(dayOfTheWeek, [forecast]);
+        }
+    }
+    for (let [key, value] of dayWiseForecast) {
+        let minTemp = Math.min(...Array.from(value, val => val.temp_min));
+        let maxTemp = Math.min(...Array.from(value, val => val.temp_max));
+        dayWiseForecast.set(key, { temp_min: minTemp, temp_max: maxTemp, icon: value.find(v => v.icon).icon });
+    }
+    console.log(dayWiseForecast);
+    return dayWiseForecast;
+};
 
 const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_min }, weather: [{ description }] }) {
     const currentForecastElement = document.getElementById('current-forecast');
@@ -59,6 +83,26 @@ const loadHumidity = function ({ main: { humidity } }) {
     `;
 };
 
+const loadFiveDayForecast = function (hourlyForecast) {
+    console.log(hourlyForecast);
+    const dayWiseForecast = computeDayWiseForecast(hourlyForecast);
+    const container = document.querySelector('.five-day-forecast-container');
+    let dayWiseInfo = "";
+    Array.from(dayWiseForecast).map(([day, { temp_max, temp_min, icon }], index) => {
+        if (index < 5) {
+            dayWiseInfo += `
+            <article class="day-wise-forecast">
+                <h3>${index === 0 ? "Today" : day}</h3>
+                <img class="icon" src="${createImgUrl(icon)}" alt="">
+                    <p class="min-temp">${formatTemperature(temp_min)}</p>
+                    <p class="max-temp">${formatTemperature(temp_max)}</p>
+            </article>
+            `;
+        }
+    });
+    container.innerHTML = dayWiseInfo;
+};
+
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         const currentWeather = await getCurrentWeatherData();
@@ -66,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         loadCurrentWeatherInfo(currentWeather);
         const hourlyForecast = await getHourlyForecast(currentWeather);
         loadHourlyForecast(hourlyForecast);
+        loadFiveDayForecast(hourlyForecast);
         loadFeelsLike(currentWeather);
         loadHumidity(currentWeather);
     } catch (err) {
