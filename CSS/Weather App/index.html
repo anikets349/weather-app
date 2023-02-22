@@ -11,6 +11,10 @@
 
 <body>
     <main class="container">
+        <article id="search-container">
+            <input list="cities" type="search" name="search" id="search" placeholder="Enter city name here">
+            <datalist id="cities"></datalist>
+        </article>
         <article id="current-forecast">
             <h1 class="city">City name</h1>
             <p class="temp">Temperature</p>
@@ -19,19 +23,19 @@
         </article>
         <article id="hourly-forecast">
             <h1>Hourly Forecast</h1>
-            <section id="hourly-container"></section>
+            <section id="hourly-container">--</section>
         </article>
         <article id="five-day-forecast">
             <h1>5-day Forecast</h1>
-            <section class="five-day-forecast-container"></section>
+            <section class="five-day-forecast-container">--</section>
         </article>
         <article id="feels-like">
             <h1>Feels like</h1>
-            <p class="temp">temp</p>
+            <p class="temp">--</p>
         </article>
         <article id="humidity">
             <h1>Humidity</h1>
-            <p class="humidity-value">Value</p>
+            <p class="humidity-value">--</p>
         </article>
     </main>
     <script src="./main.js"></script>

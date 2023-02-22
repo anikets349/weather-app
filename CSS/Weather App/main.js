@@ -1,9 +1,17 @@
 const API_KEY = 'e6a7b9d25322776f6cef20e87dfcba86';
 const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+let selectedCityText;
+let selectedCity;
 
-const getCurrentWeatherData = async function () {
-    const city = 'belagavi';
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+const getCitiesUsingGeolocation = async function (searchText) {
+    const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${searchText}&limit=5&appid=${API_KEY}`);
+    return response.json();
+};
+
+const getCurrentWeatherData = async function ({ lat, lon, name }) {
+    console.log(`${lat}, ${lon}`);
+    const url = (lat && lon) ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric` : `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+    const response = await fetch(url);
     return response.json();
 };
 
@@ -29,7 +37,6 @@ const computeDayWiseForecast = function (hourlyForecast) {
     for (let forecast of hourlyForecast) {
         const [date] = forecast.dt_txt.split(' ');
         const dayOfTheWeek = DAYS_OF_THE_WEEK[new Date(date).getDay()];
-        console.log(dayOfTheWeek);
         if (dayWiseForecast.has(dayOfTheWeek)) {
             let forecastForTheDay = dayWiseForecast.get(dayOfTheWeek);
             forecastForTheDay.push(forecast);
@@ -43,7 +50,6 @@ const computeDayWiseForecast = function (hourlyForecast) {
         let maxTemp = Math.min(...Array.from(value, val => val.temp_max));
         dayWiseForecast.set(key, { temp_min: minTemp, temp_max: maxTemp, icon: value.find(v => v.icon).icon });
     }
-    console.log(dayWiseForecast);
     return dayWiseForecast;
 };
 
@@ -94,7 +100,6 @@ const loadHumidity = function ({ main: { humidity } }) {
 };
 
 const loadFiveDayForecast = function (hourlyForecast) {
-    console.log(hourlyForecast);
     const dayWiseForecast = computeDayWiseForecast(hourlyForecast);
     const container = document.querySelector('.five-day-forecast-container');
     let dayWiseInfo = "";
@@ -113,16 +118,67 @@ const loadFiveDayForecast = function (hourlyForecast) {
     container.innerHTML = dayWiseInfo;
 };
 
+const debounce = function (func,) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            console.log('debounce');
+            func.apply(this, args);
+        }, 500);
+    };
+};
+
+const onSearchChange = async function (event) {
+    let { value } = event.target;
+    console.log(value);
+    if (!value) {
+        selectedCity = null;
+        selectedCityText = '';
+    }
+    if (value && (value !== selectedCityText)) {
+        const listOfCities = await getCitiesUsingGeolocation(value);
+        console.log(listOfCities);
+        let options = "";
+        for (let { lat, lon, name, state, country } of listOfCities) {
+            options += `<option data-city-details='${JSON.stringify({ lat, lon, name })}' value="${name}, ${state}, ${country}"></option>`;
+        }
+        document.querySelector('#cities').innerHTML = options;
+
+    }
+};
+
+const debounceSearch = debounce((event) => {
+    onSearchChange(event);
+});
+
+const handleCitySelection = function (event) {
+    selectedCityText = event.target.value;
+    let options = document.querySelectorAll('#cities > option');
+    if (options?.length) {
+        let selectedOption = Array.from(options).find(option => option.value === selectedCityText);
+        selectedCity = JSON.parse(selectedOption.getAttribute('data-city-details'));
+        console.dir(selectedCity);
+        loadData();
+    }
+};
+
+const loadData = async function () {
+    const currentWeather = await getCurrentWeatherData(selectedCity);
+    loadCurrentWeatherInfo(currentWeather);
+    const hourlyForecast = await getHourlyForecast(currentWeather);
+    loadHourlyForecast(currentWeather, hourlyForecast);
+    loadFiveDayForecast(hourlyForecast);
+    loadFeelsLike(currentWeather);
+    loadHumidity(currentWeather);
+};
+
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        const currentWeather = await getCurrentWeatherData();
-        console.dir(currentWeather);
-        loadCurrentWeatherInfo(currentWeather);
-        const hourlyForecast = await getHourlyForecast(currentWeather);
-        loadHourlyForecast(currentWeather, hourlyForecast);
-        loadFiveDayForecast(hourlyForecast);
-        loadFeelsLike(currentWeather);
-        loadHumidity(currentWeather);
+        const searchInput = document.querySelector('#search');
+        searchInput.addEventListener('input', debounceSearch);
+        searchInput.addEventListener('change', handleCitySelection);
+
     } catch (err) {
         console.log('Error: ' + err.message);
     }
