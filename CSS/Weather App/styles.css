@@ -117,10 +117,15 @@ article > p {
 
 .five-day-forecast-container .day-wise-forecast h3 {
   text-transform: capitalize;
+  justify-self: start;
 }
 
 .five-day-forecast-container .day-wise-forecast .min-temp {
   opacity: 50%;
+}
+
+.five-day-forecast-container .day-wise-forecast .max-temp {
+  justify-self: end;
 }
 
 .five-day-forecast-container .day-wise-forecast .min-temp,
