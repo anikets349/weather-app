@@ -20,8 +20,8 @@
 body {
   padding-block: var(--spacing-regular);
   font-family: Arial, Helvetica, sans-serif;
-  width: 400px;
-  margin: auto;
+  max-width: 800px;
+  margin: var(--spacing-regular) auto;
 }
 
 article > h1,
@@ -161,4 +161,16 @@ article > p {
 
 #humidity {
   grid-area: humidity;
+}
+
+/* media queries */
+@media screen and (min-width: 650px) {
+  .container {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-areas:
+      "search search search search"
+      "current current current current"
+      "hourly hourly fiveday fiveday"
+      "feelslike humidity fiveday fiveday";
+  }
 }

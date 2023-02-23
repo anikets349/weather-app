@@ -190,9 +190,8 @@ const loadForecastUsingClientGeolocation = function () {
 };
 
 document.addEventListener('DOMContentLoaded', async function () {
-    loadForecastUsingClientGeolocation();
-    /*
     try {
+        loadForecastUsingClientGeolocation();
         const searchInput = document.querySelector('#search');
         // populate datalist with suggestions based on the search query
         searchInput.addEventListener('input', debounceSearch);
@@ -202,5 +201,4 @@ document.addEventListener('DOMContentLoaded', async function () {
     } catch (err) {
         console.log('Error: ' + err.message);
     }
-    */
 });
