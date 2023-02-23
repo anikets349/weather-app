@@ -1,6 +1,7 @@
 const API_KEY = 'e6a7b9d25322776f6cef20e87dfcba86';
 const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 let selectedCityText;
+// object to store the city lat, lon, name
 let selectedCity;
 
 const getCitiesUsingGeolocation = async function (searchText) {
@@ -118,7 +119,7 @@ const loadFiveDayForecast = function (hourlyForecast) {
     container.innerHTML = dayWiseInfo;
 };
 
-const debounce = function (func,) {
+const debounce = function (func) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
@@ -129,8 +130,7 @@ const debounce = function (func,) {
     };
 };
 
-const onSearchChange = async function (event) {
-    let { value } = event.target;
+const onSearchChange = async function ({ target: { value } }) {
     console.log(value);
     if (!value) {
         selectedCity = null;
@@ -176,7 +176,9 @@ const loadData = async function () {
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         const searchInput = document.querySelector('#search');
+        // populate datalist with suggestions based on the search query
         searchInput.addEventListener('input', debounceSearch);
+        // load city specific weather data after city selection
         searchInput.addEventListener('change', handleCitySelection);
 
     } catch (err) {
