@@ -173,7 +173,25 @@ const loadData = async function () {
     loadHumidity(currentWeather);
 };
 
+const successCallback = function ({ coords }) {
+    const { latitude: lat, longitude: lon } = coords;
+    console.log(lat, lon);
+    selectedCity = { lat, lon };
+    loadData();
+};
+
+const errorCallback = function (error) {
+    alert('You denied the location permission!\nSearch for the city in the search bar to fetch weather information!');
+    console.log(error);
+}
+
+const loadForecastUsingClientGeolocation = function () {
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+};
+
 document.addEventListener('DOMContentLoaded', async function () {
+    loadForecastUsingClientGeolocation();
+    /*
     try {
         const searchInput = document.querySelector('#search');
         // populate datalist with suggestions based on the search query
@@ -184,4 +202,5 @@ document.addEventListener('DOMContentLoaded', async function () {
     } catch (err) {
         console.log('Error: ' + err.message);
     }
+    */
 });

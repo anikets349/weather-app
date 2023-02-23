@@ -58,6 +58,7 @@ article > p {
   width: 100%;
   padding: var(--spacing-small);
   font-size: var(--font-regular);
+  font-weight: var(--font-semibold);
   border: none;
   border-radius: 8px;
   outline: none;
