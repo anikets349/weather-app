@@ -1,4 +1,5 @@
-const API_KEY = 'e6a7b9d25322776f6cef20e87dfcba86';
+import API_KEY from "./apiKey.js";
+
 const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 let selectedCityText;
 // object to store the city lat, lon, name
@@ -10,7 +11,6 @@ const getCitiesUsingGeolocation = async function (searchText) {
 };
 
 const getCurrentWeatherData = async function ({ lat, lon, name }) {
-    console.log(`${lat}, ${lon}`);
     const url = (lat && lon) ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric` : `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
     const response = await fetch(url);
     return response.json();
@@ -138,7 +138,6 @@ const onSearchChange = async function ({ target: { value } }) {
     }
     if (value && (value !== selectedCityText)) {
         const listOfCities = await getCitiesUsingGeolocation(value);
-        console.log(listOfCities);
         let options = "";
         for (let { lat, lon, name, state, country } of listOfCities) {
             options += `<option data-city-details='${JSON.stringify({ lat, lon, name })}' value="${name}, ${state}, ${country}"></option>`;
@@ -158,7 +157,6 @@ const handleCitySelection = function (event) {
     if (options?.length) {
         let selectedOption = Array.from(options).find(option => option.value === selectedCityText);
         selectedCity = JSON.parse(selectedOption.getAttribute('data-city-details'));
-        console.dir(selectedCity);
         loadData();
     }
 };
@@ -175,14 +173,12 @@ const loadData = async function () {
 
 const successCallback = function ({ coords }) {
     const { latitude: lat, longitude: lon } = coords;
-    console.log(lat, lon);
     selectedCity = { lat, lon };
     loadData();
 };
 
 const errorCallback = function (error) {
     alert('You denied the location permission!\nSearch for the city in the search bar to fetch weather information!');
-    console.log(error);
 }
 
 const loadForecastUsingClientGeolocation = function () {
@@ -199,6 +195,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         searchInput.addEventListener('change', handleCitySelection);
 
     } catch (err) {
-        console.log('Error: ' + err.message);
+        alert('Error: ' + err.message);
     }
 });
