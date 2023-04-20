@@ -92,6 +92,18 @@ body {
   font-size: var(--font-xlarge);
 }
 
+#current-forecast .change-temp-unit-btn {
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0.8rem 1.3rem;
+  color: var(--card-heading-color);
+  outline: none;
+  border: 1px solid var(--card-heading-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 #current-forecast .desc {
   text-transform: capitalize;
 }

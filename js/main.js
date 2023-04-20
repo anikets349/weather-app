@@ -5,6 +5,33 @@ let selectedCityText;
 // object to store the city lat, lon, name
 let selectedCity;
 
+const toggleBtnText = function (btn) {
+    let text = btn.innerText;
+    if (text.includes('imperial')) {
+        text = 'Change to metric units';
+    } else {
+        text = 'Change to imperial units';
+    }
+    btn.innerText = text;
+}
+
+const changeTempUnitBtn = document.querySelector('.change-temp-unit-btn');
+changeTempUnitBtn.addEventListener('click', () => {
+    toggleBtnText(changeTempUnitBtn);
+    const tempStr = document.querySelector('.temp').querySelector('span')?.innerText;
+    let newFormattedTemp = '';
+    if (tempStr && tempStr.includes('°C')) {
+        const tempInCelsius = parseFloat(tempStr.slice(0, tempStr.indexOf('°C')));
+        const tempInF = 9 / 5 * tempInCelsius + 32;
+        newFormattedTemp = formatTemperature(tempInF, 'F');
+    } else if (tempStr && tempStr.includes('°F')) {
+        const tempInF = parseFloat(tempStr.slice(0, tempStr.indexOf('°F')));
+        const tempInCelsius = 5 / 9 * (tempInF - 32);
+        newFormattedTemp = formatTemperature(tempInCelsius);
+    }
+    document.querySelector('.temp').innerHTML = newFormattedTemp;
+});
+
 const getCitiesUsingGeolocation = async function (searchText) {
     const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${searchText}&limit=5&appid=${API_KEY}`);
     return response.json();
@@ -25,8 +52,8 @@ const getHourlyForecast = async function ({ name: city }) {
     });
 };
 
-const formatTemperature = function (temp) {
-    return `<span>${temp?.toFixed(1)}&deg;C</span>`;
+const formatTemperature = function (temp, unit = 'C') {
+    return `<span>${temp?.toFixed(1)}&deg;${unit}</span>`;
 };
 
 const createImgUrl = function (icon) {
