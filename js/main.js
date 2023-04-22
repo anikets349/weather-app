@@ -1,9 +1,75 @@
 import API_KEY from "./apiKey.js";
 
+const TEMP_UNITS = {
+    'METRIC': '°C',
+    'IMPERIAL': '°F',
+};
+
+let displayTempInUnit = TEMP_UNITS.METRIC;
+
+const convertTemperature = function (temp, toUnit) {
+    let convertedTemp;
+    if (toUnit === TEMP_UNITS.METRIC) {
+        // convert temp in F to C
+        convertedTemp = 5 / 9 * (temp - 32);
+    } else if (toUnit === TEMP_UNITS.IMPERIAL) {
+        // convert temp in C to F
+        convertedTemp = 9 / 5 * temp + 32;
+    }
+    return formatTemperature(convertedTemp, toUnit);
+}
+
+const changeTempInDOM = function () {
+    const tempContainer = document.querySelectorAll('[data-about]');
+    for (let parent of tempContainer) {
+        const tempFields = parent.querySelectorAll('span');
+        for (let child of tempFields) {
+            let result;
+            const temp = child.innerText;
+            // parseFloat(tempStr.slice(0, tempStr.indexOf('°F'))
+            if (temp?.includes(TEMP_UNITS.METRIC)) {
+                // temp is in C, convert to F
+                const tempMagnitude = temp.slice(0, temp.indexOf(TEMP_UNITS.METRIC));
+                result = convertTemperature(tempMagnitude, TEMP_UNITS.IMPERIAL);
+            } else if (temp?.includes(TEMP_UNITS.IMPERIAL)) {
+                // temp is in F, convert to C
+                const tempMagnitude = temp.slice(0, temp.indexOf(TEMP_UNITS.IMPERIAL));
+                result = convertTemperature(tempMagnitude, TEMP_UNITS.METRIC);
+            }
+            if (result) {
+                child.innerHTML = result;
+            }
+        }
+    }
+}
+
+const changeTempUnitBtn = document.querySelector('.change-temp-unit-btn');
+changeTempUnitBtn.addEventListener('click', () => {
+    if (displayTempInUnit === TEMP_UNITS.METRIC) {
+        displayTempInUnit = TEMP_UNITS.IMPERIAL;
+        changeTempUnitBtn.innerText = 'Change to metric units';
+    } else if (displayTempInUnit === TEMP_UNITS.IMPERIAL) {
+        displayTempInUnit = TEMP_UNITS.METRIC;
+        changeTempUnitBtn.innerText = 'Change to imperial units';
+    }
+    changeTempInDOM();
+});
+
+
 const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 let selectedCityText;
 // object to store the city lat, lon, name
 let selectedCity;
+
+const toggleBtnText = function (btn) {
+    let text = btn.innerText;
+    if (text.includes('imperial')) {
+        text = 'Change to metric units';
+    } else {
+        text = 'Change to imperial units';
+    }
+    btn.innerText = text;
+}
 
 const getCitiesUsingGeolocation = async function (searchText) {
     const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${searchText}&limit=5&appid=${API_KEY}`);
@@ -25,8 +91,8 @@ const getHourlyForecast = async function ({ name: city }) {
     });
 };
 
-const formatTemperature = function (temp) {
-    return `<span>${temp?.toFixed(1)}&deg;C</span>`;
+const formatTemperature = function (temp, unit = TEMP_UNITS.METRIC) {
+    return `<span>${temp?.toFixed(1)}${unit}</span>`;
 };
 
 const createImgUrl = function (icon) {
@@ -73,7 +139,7 @@ const loadHourlyForecast = function ({ main: { temp: curTemp }, weather: [{ icon
         <article>
             <h3 class="time">Now</h3>
             <img class="icon" src="${createImgUrl(curIcon)}" alt="Current Weather icon">
-            <p class="temp">${formatTemperature(curTemp)}</p>
+            <p class="temp" data-about="temperature">${formatTemperature(curTemp)}</p>
         </article>
     `;
     for (let { dt_txt: time, icon, temp } of hourlyData) {
@@ -81,7 +147,7 @@ const loadHourlyForecast = function ({ main: { temp: curTemp }, weather: [{ icon
             <article>
                     <h3 class="time">${timeFormatter.format(new Date(time))}</h3>
                     <img class="icon" src="${createImgUrl(icon)}" alt="Current Weather icon">
-                    <p class="temp">${formatTemperature(temp)}</p>
+                    <p class="temp" data-about="temperature">${formatTemperature(temp)}</p>
                 </article>
         `;
         hourlyContainer.innerHTML = data;
@@ -110,8 +176,8 @@ const loadFiveDayForecast = function (hourlyForecast) {
             <article class="day-wise-forecast">
                 <h3>${index === 0 ? "Today" : day}</h3>
                 <img class="icon" src="${createImgUrl(icon)}" alt="">
-                    <p class="min-temp">${formatTemperature(temp_min)}</p>
-                    <p class="max-temp">${formatTemperature(temp_max)}</p>
+                    <p class="min-temp" data-about="temperature">${formatTemperature(temp_min)}</p>
+                    <p class="max-temp" data-about="temperature">${formatTemperature(temp_max)}</p>
             </article>
             `;
         }
@@ -174,9 +240,11 @@ const loadData = async function () {
 const successCallback = function ({ coords }) {
     const { latitude: lat, longitude: lon } = coords;
     selectedCity = { lat, lon };
-    loadData();
-};
-
+    loadData()
+        .catch((err) => {
+            alert('Error: ' + err.message);
+        });
+}
 const errorCallback = function (error) {
     alert('You denied the location permission!\nSearch for the city in the search bar to fetch weather information!');
 }
