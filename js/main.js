@@ -1,9 +1,9 @@
-import API_KEY from "./apiKey.js";
-
-const TEMP_UNITS = {
-    'METRIC': '°C',
-    'IMPERIAL': '°F',
-};
+import API_KEY from "../utils/apiKey.js";
+import {
+    TEMP_UNITS,
+    DAYS_OF_THE_WEEK,
+    IMG_URL
+} from "../utils/constants.js";
 
 let displayTempInUnit = TEMP_UNITS.METRIC;
 
@@ -55,21 +55,9 @@ changeTempUnitBtn.addEventListener('click', () => {
     changeTempInDOM();
 });
 
-
-const DAYS_OF_THE_WEEK = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 let selectedCityText;
 // object to store the city lat, lon, name
 let selectedCity;
-
-const toggleBtnText = function (btn) {
-    let text = btn.innerText;
-    if (text.includes('imperial')) {
-        text = 'Change to metric units';
-    } else {
-        text = 'Change to imperial units';
-    }
-    btn.innerText = text;
-}
 
 const getCitiesUsingGeolocation = async function (searchText) {
     const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${searchText}&limit=5&appid=${API_KEY}`);
@@ -96,7 +84,7 @@ const formatTemperature = function (temp, unit = TEMP_UNITS.METRIC) {
 };
 
 const createImgUrl = function (icon) {
-    return `http://openweathermap.org/img/wn/${icon}@2x.png`;
+    return `${IMG_URL}/${icon}@2x.png`;
 }
 
 const computeDayWiseForecast = function (hourlyForecast) {
@@ -245,6 +233,7 @@ const successCallback = function ({ coords }) {
             alert('Error: ' + err.message);
         });
 }
+
 const errorCallback = function (error) {
     alert('You denied the location permission!\nSearch for the city in the search bar to fetch weather information!');
 }
