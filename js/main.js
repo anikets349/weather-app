@@ -1,4 +1,4 @@
-import API_KEY from "../utils/apiKey.js";
+import API_KEY from './apiKey.js';
 import {
     TEMP_UNITS,
     DAYS_OF_THE_WEEK,
