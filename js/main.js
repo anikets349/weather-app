@@ -150,7 +150,7 @@ const loadFeelsLike = function ({ main: { feels_like } }) {
 const loadHumidity = function ({ main: { humidity } }) {
     const container = document.getElementById('humidity');
     container.querySelector('.humidity-value').innerHTML = `
-        <span>${humidity}gm<sup>-3</sup></span>
+        <span>${humidity}%</span>
     `;
 };
 
