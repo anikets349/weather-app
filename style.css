@@ -108,6 +108,7 @@ body {
   text-transform: capitalize;
 }
 
+#current-forecast .wind-speed-dir,
 #current-forecast .desc,
 #current-forecast .min-max-temp {
   font-size: var(--font-regular);

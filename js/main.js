@@ -2,6 +2,7 @@ import API_KEY from './apiKey.js';
 import {
     TEMP_UNITS,
     DAYS_OF_THE_WEEK,
+    COMPASS_SECTOR,
     IMG_URL
 } from "../utils/constants.js";
 
@@ -108,10 +109,20 @@ const computeDayWiseForecast = function (hourlyForecast) {
     return dayWiseForecast;
 };
 
-const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_min }, weather: [{ description }] }) {
+const computeWindDirection = function (windDirInDeg) {
+    return COMPASS_SECTOR[(windDirInDeg / 22.5).toFixed(0)];
+}
+
+const getWindSpeedAndDir = function (windSpeed, windDirInDeg) {
+    const windDir = computeWindDirection(windDirInDeg);
+    return `Wind speed: ${windSpeed}m/s, Direction: ${windDir}`;
+}
+
+const loadCurrentWeatherInfo = function ({ name, main: { temp, temp_max, temp_min }, weather: [{ description }], wind: { speed, deg } }) {
     const currentForecastElement = document.getElementById('current-forecast');
     currentForecastElement.querySelector('.city').textContent = name;
     currentForecastElement.querySelector('.temp').innerHTML = formatTemperature(temp);
+    currentForecastElement.querySelector('.wind-speed-dir').innerHTML = getWindSpeedAndDir(speed, deg);
     currentForecastElement.querySelector('.desc').textContent = description;
     currentForecastElement.querySelector('.min-max-temp').innerHTML = `High: ${formatTemperature(temp_max)}, Low: ${formatTemperature(temp_min)}`;
 };
